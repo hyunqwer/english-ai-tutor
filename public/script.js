@@ -267,49 +267,81 @@ class CloudflareEnglishTutor {
         this.addMessage('Emma 선생님', message);
     }
     
-    async speakText(text) {
-        if (!this.canAutoPlay) return;
+async speakText(text, priority = false) {
+    if (!this.canAutoPlay) return;
+    
+    try {
+        const response = await fetch(`${WORKER_URL}/api/speak`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+        });
         
-        try {
-            if (this.currentAudio) {
-                this.currentAudio.pause();
+        if (response.ok) {
+            const audioBlob = await response.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            this.currentAudio = new Audio(audioUrl);
+            this.currentAudio.playsInline = true;
+            
+            await this.currentAudio.play();
+            this.currentAudio.onended = () => {
+                URL.revokeObjectURL(audioUrl);
                 this.currentAudio = null;
+            };
+            return; // 성공 시 종료
+        } else {
+            // 서버에서 폴백 신호를 보낸 경우
+            const errorData = await response.json().catch(() => ({}));
+            if (errorData.fallback) {
+                console.log('OpenAI TTS 실패, 브라우저 TTS로 전환:', errorData.error);
+                this.addMessage('시스템', errorData.error);
             }
-            
-            const response = await fetch(`${WORKER_URL}/api/speak`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: text })
-            });
-            
-            if (response.ok) {
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                
-                this.currentAudio = new Audio(audioUrl);
-                this.currentAudio.playsInline = true;
-                
-                await this.currentAudio.play();
-                this.currentAudio.onended = () => {
-                    URL.revokeObjectURL(audioUrl);
-                    this.currentAudio = null;
-                };
-            }
-            
-        } catch (error) {
-            console.log('TTS failed, using fallback:', error);
-            this.fallbackTTS(text);
         }
+        
+    } catch (error) {
+        console.log('TTS 네트워크 오류, 브라우저 TTS로 전환:', error);
     }
     
-    fallbackTTS(text) {
-        if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = 0.8;
-            utterance.lang = 'en-US';
-            speechSynthesis.speak(utterance);
+    // 폴백: 브라우저 내장 TTS (개선된 버전)
+    this.fallbackTTS(text);
+}
+
+fallbackTTS(text) {
+    if ('speechSynthesis' in window) {
+        speechSynthesis.cancel(); // 기존 음성 중지
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.8;
+        utterance.lang = 'en-US';
+        utterance.volume = 0.8;
+        
+        // 최적의 영어 음성 선택
+        const voices = speechSynthesis.getVoices();
+        const preferredVoices = [
+            'Google US English',
+            'Microsoft Zira - English (United States)',
+            'Alex'
+        ];
+        
+        let selectedVoice = null;
+        for (const preferred of preferredVoices) {
+            selectedVoice = voices.find(voice => voice.name.includes(preferred));
+            if (selectedVoice) break;
         }
+        
+        if (!selectedVoice) {
+            selectedVoice = voices.find(voice => voice.lang.startsWith('en'));
+        }
+        
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+        
+        speechSynthesis.speak(utterance);
+        console.log('브라우저 TTS 재생:', text.substring(0, 30) + '...');
     }
+}
     
     showLoading() { this.loadingIndicator.style.display = 'flex'; }
     hideLoading() { this.loadingIndicator.style.display = 'none'; }
