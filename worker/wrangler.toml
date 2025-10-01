@@ -1,0 +1,6 @@
+name = "emma-tutor-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+# 환경 변수는 Cloudflare 대시보드에서 설정
+# wrangler secret put OPENAI_API_KEY

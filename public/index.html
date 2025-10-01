@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🌟 영어 AI 튜터 Emma 선생님 🌟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            touch-action: manipulation;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            color: white;
+            text-align: center;
+            padding: 20px 15px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .status-banner {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            margin: 10px;
+            border-radius: 8px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .chat-display {
+            height: 350px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fafafa;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 15px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .message {
+            margin-bottom: 12px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+
+        .message.emma {
+            background: linear-gradient(135deg, #4169e1, #6495ed);
+            color: white;
+            margin-right: auto;
+            box-shadow: 0 2px 8px rgba(65,105,225,0.3);
+        }
+
+        .message.student {
+            background: linear-gradient(135deg, #32cd32, #90ee90);
+            color: white;
+            margin-left: auto;
+            box-shadow: 0 2px 8px rgba(50,205,50,0.3);
+        }
+
+        .message.system {
+            background: #f0f0f0;
+            color: #666;
+            text-align: center;
+            margin: 10px auto;
+            font-style: italic;
+            max-width: 90%;
+        }
+
+        .vocab-section, .controls, .text-input-section {
+            padding: 15px;
+            background: #f8f9ff;
+        }
+
+        .vocab-input, .text-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .vocab-input:focus, .text-input:focus {
+            outline: none;
+            border-color: #4169e1;
+            box-shadow: 0 0 0 3px rgba(65,105,225,0.1);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            width: 100%;
+            margin: 5px 0;
+            min-height: 48px;
+            touch-action: manipulation;
+            transition: all 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #32cd32, #90ee90); }
+        .btn-voice { background: linear-gradient(135deg, #ff6347, #ff7f7f); }
+        .btn-voice.recording { 
+            background: linear-gradient(135deg, #ff1493, #ff69b4);
+            animation: pulse 1s infinite;
+        }
+        .btn-chat { background: linear-gradient(135deg, #4169e1, #6495ed); }
+        .btn-next { background: linear-gradient(135deg, #ffa500, #ffb347); }
+        .btn-enable-sound { background: linear-gradient(135deg, #9370db, #ba55d3); }
+
+        .btn:disabled {
+            background: #cccccc !important;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4169e1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 1000;
+            font-size: 16px;
+        }
+
+        .status-indicator.listening { background: rgba(255,20,147,0.9); }
+        .status-indicator.recording { background: rgba(255,69,0,0.9); }
+
+        @media (max-width: 768px) {
+            .container { margin: 5px; }
+            .header h1 { font-size: 1.5rem; }
+            .chat-display { height: 280px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🌟 영어 AI 튜터 Emma 🌟</h1>
+            <p class="subtitle">GitHub + Cloudflare로 전 세계 어디서나! 🌍✨</p>
+        </header>
+
+        <div class="status-banner">
+            ✅ HTTPS 보안 환경 - 마이크 사용 가능!<br>
+            🎤 "소리 켜기" 버튼을 눌러 시작하세요!
+        </div>
+
+        <div class="controls">
+            <button id="enableSoundBtn" class="btn btn-enable-sound">🔊 소리 켜기 (필수!)</button>
+        </div>
+
+        <section class="chat-section" style="padding: 0;">
+            <div id="chatDisplay" class="chat-display"></div>
+        </section>
+
+        <section class="vocab-section">
+            <h3 style="margin-bottom: 10px;">📖 오늘 배운 단어들</h3>
+            <input type="text" id="vocabInput" placeholder="apple, happy, school, friend, book" class="vocab-input">
+            <button id="startReviewBtn" class="btn btn-primary">🚀 복습 시작하기!</button>
+        </section>
+
+        <section class="controls">
+            <button id="voiceBtn" class="btn btn-voice">🎤 말하기</button>
+            <button id="recordBtn" class="btn btn-voice" style="display: none;">🎙️ 녹음하기</button>
+            <button id="freeChatBtn" class="btn btn-chat">💬 자유대화</button>
+            <button id="nextQuestionBtn" class="btn btn-next" style="display: none;">➡️ 다음 문제</button>
+        </section>
+
+        <section class="text-input-section">
+            <h3 style="margin-bottom: 10px;">✏️ 텍스트로 대화하기</h3>
+            <input type="text" id="textInput" placeholder="메시지를 입력하세요..." class="text-input">
+            <button id="sendBtn" class="btn btn-chat">전송 📤</button>
+        </section>
+
+        <div id="loadingIndicator" class="loading">
+            <div class="spinner"></div>
+            <p style="color: white;">Emma가 생각하고 있어요...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
