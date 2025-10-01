@@ -1,6 +1,6 @@
 // 🚨 중요: 여기에 실제 Worker URL을 입력해야 합니다!
 // 배포 후 https://your-worker-name.your-subdomain.workers.dev 형태가 됩니다
-const WORKER_URL = 'https://emma-tutor-api.your-subdomain.workers.dev';
+const WORKER_URL = 'https://emma-tutor-api.hyunqwer.workers.dev';
 
 class CloudflareEnglishTutor {
     constructor() {
