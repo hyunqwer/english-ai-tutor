@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="전 세계 어디서나 접속 가능한 영어 AI 튜터 Emma와 함께 맞춤형 학습을 시작하세요.">
     <title>🌟 영어 AI 튜터 Emma 선생님 🌟</title>
     <style>
         * {
@@ -216,7 +217,7 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <main class="container" role="main">
         <header class="header">
             <h1>🌟 영어 AI 튜터 Emma 🌟</h1>
             <p class="subtitle">GitHub + Cloudflare로 전 세계 어디서나! 🌍✨</p>
@@ -228,38 +229,38 @@
         </div>
 
         <div class="controls">
-            <button id="enableSoundBtn" class="btn btn-enable-sound">🔊 소리 켜기 (필수!)</button>
+            <button id="enableSoundBtn" type="button" class="btn btn-enable-sound">🔊 소리 켜기 (필수!)</button>
         </div>
 
         <section class="chat-section" style="padding: 0;">
-            <div id="chatDisplay" class="chat-display"></div>
+            <div id="chatDisplay" class="chat-display" aria-live="polite" aria-label="대화 내용"></div>
         </section>
 
         <section class="vocab-section">
             <h3 style="margin-bottom: 10px;">📖 오늘 배운 단어들</h3>
-            <input type="text" id="vocabInput" placeholder="apple, happy, school, friend, book" class="vocab-input">
-            <button id="startReviewBtn" class="btn btn-primary">🚀 복습 시작하기!</button>
+            <input type="text" id="vocabInput" placeholder="apple, happy, school, friend, book" class="vocab-input" autocomplete="off">
+            <button id="startReviewBtn" type="button" class="btn btn-primary">🚀 복습 시작하기!</button>
         </section>
 
         <section class="controls">
-            <button id="voiceBtn" class="btn btn-voice">🎤 말하기</button>
-            <button id="recordBtn" class="btn btn-voice" style="display: none;">🎙️ 녹음하기</button>
-            <button id="freeChatBtn" class="btn btn-chat">💬 자유대화</button>
-            <button id="nextQuestionBtn" class="btn btn-next" style="display: none;">➡️ 다음 문제</button>
+            <button id="voiceBtn" type="button" class="btn btn-voice">🎤 말하기</button>
+            <button id="recordBtn" type="button" class="btn btn-voice" style="display: none;">🎙️ 녹음하기</button>
+            <button id="freeChatBtn" type="button" class="btn btn-chat">💬 자유대화</button>
+            <button id="nextQuestionBtn" type="button" class="btn btn-next" style="display: none;">➡️ 다음 문제</button>
         </section>
 
         <section class="text-input-section">
             <h3 style="margin-bottom: 10px;">✏️ 텍스트로 대화하기</h3>
-            <input type="text" id="textInput" placeholder="메시지를 입력하세요..." class="text-input">
-            <button id="sendBtn" class="btn btn-chat">전송 📤</button>
+            <input type="text" id="textInput" placeholder="메시지를 입력하세요..." class="text-input" autocomplete="off">
+            <button id="sendBtn" type="button" class="btn btn-chat">전송 📤</button>
         </section>
 
         <div id="loadingIndicator" class="loading">
             <div class="spinner"></div>
             <p style="color: white;">Emma가 생각하고 있어요...</p>
         </div>
-    </div>
+    </main>
 
-<script src="script.js?v=2025-10-02-fix"></script>
+<script src="script.js?v=2025-10-02-fix" defer></script>
 </body>
 </html>
