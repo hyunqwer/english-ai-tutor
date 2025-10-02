@@ -4,8 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="전 세계 어디서나 접속 가능한 영어 AI 튜터 Emma와 함께 맞춤형 학습을 시작하세요.">
-    <title>🌟 영어 AI 튜터 Emma 선생님 🌟</title>
+    <title>영어 AI 튜터 Emma</title>
     <style>
+        :root {
+            color-scheme: light;
+            --bg-gradient-start: #eef2ff;
+            --bg-gradient-end: #f8fbff;
+            --card-bg: #ffffff;
+            --card-border: rgba(35, 67, 140, 0.08);
+            --primary: #3f4cca;
+            --primary-accent: #7581ff;
+            --accent-green: #15a26e;
+            --accent-amber: #f59f00;
+            --text-strong: #1f2a4a;
+            --text-muted: #5b6785;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+            --shadow-soft: 0 20px 45px rgba(31, 42, 74, 0.12);
+            --shadow-subtle: 0 10px 30px rgba(31, 42, 74, 0.08);
+            font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,177 +34,332 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
-            touch-action: manipulation;
+            background: linear-gradient(150deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-strong);
+            padding: clamp(20px, 4vw, 40px);
+            display: flex;
+            justify-content: center;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
+        .page {
+            width: min(1140px, 100%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(28px, 4vw, 40px);
         }
 
-        .header {
-            background: linear-gradient(135deg, #4169e1, #6495ed);
-            color: white;
-            text-align: center;
-            padding: 20px 15px;
+        .hero {
+            display: grid;
+            gap: clamp(20px, 4vw, 32px);
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: clamp(28px, 4vw, 40px);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-subtle);
         }
 
-        .header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 8px;
+        .hero__eyebrow {
+            font-size: 0.85rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
         }
 
-        .subtitle {
+        .hero__title {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.25;
+        }
+
+        .hero__description {
+            color: var(--text-muted);
             font-size: 1rem;
-            opacity: 0.9;
+            line-height: 1.7;
+            max-width: 480px;
         }
 
-        .status-banner {
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            margin: 10px;
-            border-radius: 8px;
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .hero__status {
+            align-self: center;
+            background: rgba(117, 129, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 20px 24px;
+            border: 1px solid rgba(117, 129, 255, 0.24);
+            display: grid;
+            gap: 12px;
+        }
+
+        .status-label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary);
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent-green);
+            box-shadow: 0 0 0 6px rgba(21, 162, 110, 0.12);
+        }
+
+        .status-note {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .workspace {
+            display: grid;
+            gap: clamp(24px, 3vw, 32px);
+            grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+        }
+
+        .conversation-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: clamp(24px, 3vw, 32px);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            min-height: 520px;
+        }
+
+        .conversation-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .conversation-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(63, 76, 202, 0.08);
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .chat-display {
-            height: 350px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
+            flex: 1;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(31, 42, 74, 0.08);
+            background: linear-gradient(180deg, #f7f8ff 0%, #ffffff 100%);
+            padding: 18px;
             overflow-y: auto;
-            background: #fafafa;
-            font-size: 14px;
-            line-height: 1.6;
-            margin: 15px;
             -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
         .message {
-            margin-bottom: 12px;
+            max-width: 78%;
             padding: 12px 16px;
-            border-radius: 18px;
-            max-width: 85%;
-            word-wrap: break-word;
+            border-radius: 20px;
+            word-break: break-word;
+            box-shadow: 0 12px 30px rgba(63, 76, 202, 0.08);
         }
 
         .message.emma {
-            background: linear-gradient(135deg, #4169e1, #6495ed);
-            color: white;
-            margin-right: auto;
-            box-shadow: 0 2px 8px rgba(65,105,225,0.3);
+            background: linear-gradient(135deg, var(--primary), var(--primary-accent));
+            color: #fff;
+            align-self: flex-start;
         }
 
         .message.student {
-            background: linear-gradient(135deg, #32cd32, #90ee90);
-            color: white;
-            margin-left: auto;
-            box-shadow: 0 2px 8px rgba(50,205,50,0.3);
+            background: #ffffff;
+            color: var(--text-strong);
+            border: 1px solid rgba(31, 42, 74, 0.08);
+            align-self: flex-end;
         }
 
         .message.system {
-            background: #f0f0f0;
-            color: #666;
+            align-self: center;
             text-align: center;
-            margin: 10px auto;
-            font-style: italic;
+            background: rgba(63, 76, 202, 0.08);
+            color: var(--primary);
+            border-radius: 14px;
+            padding: 10px 14px;
+            box-shadow: none;
             max-width: 90%;
+            font-style: normal;
+            font-size: 0.85rem;
+            letter-spacing: 0.01em;
         }
 
-        .vocab-section, .controls, .text-input-section {
-            padding: 15px;
-            background: #f8f9ff;
+        .control-panel {
+            display: grid;
+            gap: clamp(18px, 3vw, 24px);
+            align-content: start;
         }
 
-        .vocab-input, .text-input {
+        .panel-section {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: clamp(22px, 3vw, 28px);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-subtle);
+            display: grid;
+            gap: 16px;
+        }
+
+        .panel-section h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .panel-section p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .vocab-input,
+        .text-input {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 10px;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(31, 42, 74, 0.12);
+            padding: 12px 14px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .vocab-input:focus, .text-input:focus {
+        .vocab-input:focus,
+        .text-input:focus {
             outline: none;
-            border-color: #4169e1;
-            box-shadow: 0 0 0 3px rgba(65,105,225,0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(117, 129, 255, 0.2);
+        }
+
+        .button-stack {
+            display: grid;
+            gap: 10px;
         }
 
         .btn {
-            padding: 12px 20px;
             border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            color: white;
-            width: 100%;
-            margin: 5px 0;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             min-height: 48px;
-            touch-action: manipulation;
-            transition: all 0.2s;
+            color: #fff;
         }
 
         .btn:active {
-            transform: scale(0.95);
+            transform: translateY(1px);
         }
 
-        .btn-primary { background: linear-gradient(135deg, #32cd32, #90ee90); }
-        .btn-voice { background: linear-gradient(135deg, #ff6347, #ff7f7f); }
-        .btn-voice.recording { 
-            background: linear-gradient(135deg, #ff1493, #ff69b4);
-            animation: pulse 1s infinite;
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green), #1fd08a);
+            box-shadow: 0 12px 24px rgba(21, 162, 110, 0.25);
         }
-        .btn-chat { background: linear-gradient(135deg, #4169e1, #6495ed); }
-        .btn-next { background: linear-gradient(135deg, #ffa500, #ffb347); }
-        .btn-enable-sound { background: linear-gradient(135deg, #9370db, #ba55d3); }
+
+        .btn-primary:hover {
+            box-shadow: 0 16px 28px rgba(21, 162, 110, 0.3);
+        }
+
+        .btn-surface {
+            background: #fff;
+            color: var(--primary);
+            border: 1px solid rgba(63, 76, 202, 0.18);
+            box-shadow: 0 10px 24px rgba(63, 76, 202, 0.12);
+        }
+
+        .btn-surface:hover {
+            box-shadow: 0 16px 28px rgba(63, 76, 202, 0.18);
+        }
+
+        .btn-voice {
+            background: linear-gradient(135deg, #ff5a8a, #ff7e5f);
+            box-shadow: 0 12px 24px rgba(255, 90, 138, 0.25);
+        }
+
+        .btn-voice.recording {
+            animation: pulse 1.2s ease-in-out infinite;
+            background: linear-gradient(135deg, #ff1744, #ff5e62);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, var(--accent-amber), #ffd166);
+            color: #1f2a4a;
+            box-shadow: 0 12px 24px rgba(245, 159, 0, 0.24);
+        }
 
         .btn:disabled {
-            background: #cccccc !important;
+            background: rgba(31, 42, 74, 0.12) !important;
+            color: rgba(31, 42, 74, 0.5) !important;
             cursor: not-allowed;
+            box-shadow: none;
             transform: none;
         }
 
+        .text-input-row {
+            display: grid;
+            gap: 12px;
+        }
+
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
         }
 
         .loading {
-            display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
+            inset: 0;
+            background: rgba(14, 21, 48, 0.55);
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            flex-direction: column;
+            backdrop-filter: blur(6px);
+        }
+
+        .loading__card {
+            background: rgba(17, 23, 53, 0.88);
+            color: #fff;
+            padding: 28px 32px;
+            border-radius: var(--radius-md);
+            display: grid;
+            gap: 16px;
+            text-align: center;
+            width: min(280px, 80vw);
         }
 
         .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #4169e1;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.25);
+            border-top-color: #fff;
             animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            margin: 0 auto;
         }
 
         @keyframes spin {
@@ -192,75 +367,103 @@
             100% { transform: rotate(360deg); }
         }
 
-        .status-indicator {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 20px 25px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 1000;
-            font-size: 16px;
+        @media (max-width: 1024px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .status-indicator.listening { background: rgba(255,20,147,0.9); }
-        .status-indicator.recording { background: rgba(255,69,0,0.9); }
+        @media (max-width: 720px) {
+            body {
+                padding: 16px;
+            }
 
-        @media (max-width: 768px) {
-            .container { margin: 5px; }
-            .header h1 { font-size: 1.5rem; }
-            .chat-display { height: 280px; }
+            .conversation-card {
+                min-height: 420px;
+            }
+
+            .text-input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 721px) {
+            .text-input-row {
+                grid-template-columns: 1fr auto;
+                align-items: center;
+            }
+
+            .text-input-row .btn {
+                min-width: 140px;
+            }
         }
     </style>
 </head>
 <body>
-    <main class="container" role="main">
-        <header class="header">
-            <h1>🌟 영어 AI 튜터 Emma 🌟</h1>
-            <p class="subtitle">GitHub + Cloudflare로 전 세계 어디서나! 🌍✨</p>
+    <main class="page" role="main">
+        <header class="hero">
+            <div>
+                <p class="hero__eyebrow">Emma AI English Tutor</p>
+                <h1 class="hero__title">Emma와 함께 직관적인 영어 학습을 시작하세요</h1>
+                <p class="hero__description">음성 인식과 맞춤형 퀴즈로 학습 흐름을 지켜주는 실시간 튜터입니다. 대화를 이어가며 어휘를 복습하고 발음을 다듬어 보세요.</p>
+            </div>
+            <div class="hero__status" aria-live="polite">
+                <span class="status-label"><span class="status-dot" aria-hidden="true"></span> 보안 연결 &amp; 마이크 준비 완료</span>
+                <p class="status-note">처음 사용할 때는 반드시 아래의 <strong>소리 켜기</strong> 버튼을 눌러 브라우저 오디오 권한을 허용해주세요.</p>
+            </div>
         </header>
 
-        <div class="status-banner">
-            ✅ HTTPS 보안 환경 - 마이크 사용 가능!<br>
-            🎤 "소리 켜기" 버튼을 눌러 시작하세요!
-        </div>
+        <section class="workspace" aria-label="Emma 튜터 인터페이스">
+            <article class="conversation-card">
+                <div class="conversation-header">
+                    <h2>Emma와의 대화</h2>
+                    <span class="badge" aria-live="polite">실시간 피드백</span>
+                </div>
+                <div id="chatDisplay" class="chat-display" aria-live="polite" aria-label="대화 내용"></div>
+            </article>
 
-        <div class="controls">
-            <button id="enableSoundBtn" type="button" class="btn btn-enable-sound">🔊 소리 켜기 (필수!)</button>
-        </div>
+            <aside class="control-panel">
+                <section class="panel-section">
+                    <h3>시작하기</h3>
+                    <p>Emma가 음성과 오디오를 재생할 수 있도록 먼저 소리를 활성화하세요.</p>
+                    <button id="enableSoundBtn" type="button" class="btn btn-surface">🔊 소리 켜기</button>
+                </section>
 
-        <section class="chat-section" style="padding: 0;">
-            <div id="chatDisplay" class="chat-display" aria-live="polite" aria-label="대화 내용"></div>
+                <section class="panel-section">
+                    <h3>오늘의 단어</h3>
+                    <p>학습할 단어를 쉼표로 구분해 입력하면 Emma가 맞춤 복습을 시작합니다.</p>
+                    <input type="text" id="vocabInput" class="vocab-input" placeholder="apple, happy, school, friend" autocomplete="off">
+                    <button id="startReviewBtn" type="button" class="btn btn-primary">🚀 복습 시작</button>
+                </section>
+
+                <section class="panel-section">
+                    <h3>음성 연습</h3>
+                    <div class="button-stack">
+                        <button id="voiceBtn" type="button" class="btn btn-voice">🎤 발음 연습</button>
+                        <button id="recordBtn" type="button" class="btn btn-voice" style="display: none;">🎙️ 녹음 중지</button>
+                        <button id="freeChatBtn" type="button" class="btn btn-surface">💬 자유 대화</button>
+                        <button id="nextQuestionBtn" type="button" class="btn btn-next" style="display: none;">➡️ 다음 문제</button>
+                    </div>
+                </section>
+
+                <section class="panel-section">
+                    <h3>텍스트 대화</h3>
+                    <div class="text-input-row">
+                        <input type="text" id="textInput" class="text-input" placeholder="메시지를 입력하세요..." autocomplete="off">
+                        <button id="sendBtn" type="button" class="btn btn-surface">전송 📤</button>
+                    </div>
+                </section>
+            </aside>
         </section>
-
-        <section class="vocab-section">
-            <h3 style="margin-bottom: 10px;">📖 오늘 배운 단어들</h3>
-            <input type="text" id="vocabInput" placeholder="apple, happy, school, friend, book" class="vocab-input" autocomplete="off">
-            <button id="startReviewBtn" type="button" class="btn btn-primary">🚀 복습 시작하기!</button>
-        </section>
-
-        <section class="controls">
-            <button id="voiceBtn" type="button" class="btn btn-voice">🎤 말하기</button>
-            <button id="recordBtn" type="button" class="btn btn-voice" style="display: none;">🎙️ 녹음하기</button>
-            <button id="freeChatBtn" type="button" class="btn btn-chat">💬 자유대화</button>
-            <button id="nextQuestionBtn" type="button" class="btn btn-next" style="display: none;">➡️ 다음 문제</button>
-        </section>
-
-        <section class="text-input-section">
-            <h3 style="margin-bottom: 10px;">✏️ 텍스트로 대화하기</h3>
-            <input type="text" id="textInput" placeholder="메시지를 입력하세요..." class="text-input" autocomplete="off">
-            <button id="sendBtn" type="button" class="btn btn-chat">전송 📤</button>
-        </section>
-
-        <div id="loadingIndicator" class="loading">
-            <div class="spinner"></div>
-            <p style="color: white;">Emma가 생각하고 있어요...</p>
-        </div>
     </main>
 
-<script src="script.js?v=2025-10-02-fix" defer></script>
+    <div id="loadingIndicator" class="loading" role="alert" aria-live="assertive">
+        <div class="loading__card">
+            <div class="spinner" aria-hidden="true"></div>
+            <p>Emma가 답변을 준비 중입니다...</p>
+        </div>
+    </div>
+
+    <script src="script.js?v=2025-10-02-ui" defer></script>
 </body>
 </html>
