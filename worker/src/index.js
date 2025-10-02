@@ -35,8 +35,42 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400',
 };
 
+const MAX_HISTORY_LENGTH = 20;
+
+function jsonResponse(payload, init = {}) {
+  return new Response(JSON.stringify(payload), {
+    headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    ...init,
+  });
+}
+
+async function parseJsonRequest(request) {
+  try {
+    return await request.json();
+  } catch (error) {
+    throw new Error('요청 본문을 JSON으로 파싱할 수 없습니다.');
+  }
+}
+
+function createSessionFromState(state = {}) {
+  const session = new TutorSession();
+  Object.assign(session, state);
+  if (!Array.isArray(session.conversationHistory)) {
+    session.conversationHistory = [];
+  }
+  if (!Array.isArray(session.todayVocabulary)) {
+    session.todayVocabulary = [];
+  }
+  session.currentQuizIndex = Number.isInteger(session.currentQuizIndex)
+    ? session.currentQuizIndex
+    : 0;
+  session.quizMode = Boolean(session.quizMode);
+  session.waitingForPronunciation = Boolean(session.waitingForPronunciation);
+  return session;
+}
+
 // OpenAI API 호출 함수
-async function callOpenAI(endpoint, data, apiKey) {
+async function callOpenAI(endpoint, data, apiKey, init = {}) {
   const response = await fetch(`https://api.openai.com/v1/${endpoint}`, {
     method: 'POST',
     headers: {
@@ -44,10 +78,18 @@ async function callOpenAI(endpoint, data, apiKey) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(data),
+    ...init,
   });
 
   if (!response.ok) {
-    throw new Error(`OpenAI API error: ${response.status}`);
+    let details = '';
+    try {
+      const errorBody = await response.json();
+      details = errorBody?.error?.message ? `: ${errorBody.error.message}` : '';
+    } catch (_) {
+      // ignore parse errors
+    }
+    throw new Error(`OpenAI API error ${response.status}${details}`);
   }
 
   return response;
@@ -136,35 +178,29 @@ export default {
     try {
       // 채팅 API
       if (path === '/api/chat' && request.method === 'POST') {
-        const data = await request.json();
+        const data = await parseJsonRequest(request);
         const { message, sessionState } = data;
 
         if (!message) {
-          return new Response(JSON.stringify({ error: "메시지가 필요합니다." }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
-          });
+          return jsonResponse({ error: "메시지가 필요합니다." }, { status: 400 });
         }
 
-        const session = new TutorSession();
-        Object.assign(session, sessionState);
+        const session = createSessionFromState(sessionState);
 
         // 퀴즈 모드 처리
         if (session.quizMode && session.waitingForPronunciation) {
           const response = handleQuizResponse(session, message);
-          return new Response(JSON.stringify({ 
-            response, 
-            sessionState: session 
-          }), {
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          return jsonResponse({
+            response,
+            sessionState: session,
           });
         }
 
         // 일반 대화 처리
         session.conversationHistory.push({ role: 'user', content: message });
 
-        if (session.conversationHistory.length > 20) {
-          session.conversationHistory = session.conversationHistory.slice(-16);
+        if (session.conversationHistory.length > MAX_HISTORY_LENGTH) {
+          session.conversationHistory = session.conversationHistory.slice(-MAX_HISTORY_LENGTH);
         }
 
         const messages = [
@@ -183,23 +219,22 @@ export default {
         const aiResponse = result.choices[0].message.content;
         session.conversationHistory.push({ role: 'assistant', content: aiResponse });
 
-        return new Response(JSON.stringify({ 
-          response: aiResponse, 
-          sessionState: session 
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        return jsonResponse({
+          response: aiResponse,
+          sessionState: session,
         });
       }
 
       // 복습 시작 API
       if (path === '/api/start_review' && request.method === 'POST') {
-        const data = await request.json();
+        const data = await parseJsonRequest(request);
         const { words, sessionState } = data;
 
-        const session = new TutorSession();
-        Object.assign(session, sessionState);
+        const session = createSessionFromState(sessionState);
 
-        session.todayVocabulary = words.filter(word => word.trim());
+        session.todayVocabulary = Array.isArray(words)
+          ? words.map((word) => String(word).trim()).filter(Boolean)
+          : [];
         session.quizMode = true;
         session.currentQuizIndex = 0;
         session.waitingForPronunciation = false;
@@ -212,26 +247,23 @@ export default {
 총 ${session.todayVocabulary.length}개의 단어를 복습할 거예요! 🌟
 첫 번째 문제 나갑니다! 💪`;
 
-        return new Response(JSON.stringify({ 
-          response: responseText, 
-          sessionState: session 
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        return jsonResponse({
+          response: responseText,
+          sessionState: session,
         });
       }
 
       // 다음 문제 API
       if (path === '/api/next_question' && request.method === 'POST') {
-        const data = await request.json();
+        const data = await parseJsonRequest(request);
         const { sessionState } = data;
 
-        const session = new TutorSession();
-        Object.assign(session, sessionState);
+        const session = createSessionFromState(sessionState);
 
         if (session.currentQuizIndex >= session.todayVocabulary.length) {
           session.quizMode = false;
           session.waitingForPronunciation = false;
-          
+
           const completionMessage = `🎉 와! 모든 복습을 완료했어요!
 
 총 ${session.todayVocabulary.length}개의 단어를 모두 연습했어요! 
@@ -242,12 +274,10 @@ export default {
 🌟 이제 자유롭게 영어로 대화해볼까요?
 🌟 궁금한 것이 있으면 언제든 물어보세요!`;
 
-          return new Response(JSON.stringify({
+          return jsonResponse({
             response: completionMessage,
             sessionState: session,
-            celebration: true
-          }), {
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+            celebration: true,
           });
         }
 
@@ -260,42 +290,43 @@ export default {
 
         session.waitingForPronunciation = true;
 
-        return new Response(JSON.stringify({
+        return jsonResponse({
           question: questionText,
           targetWord: currentWord,
           sessionState: session,
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
 
       // TTS API
       if (path === '/api/speak' && request.method === 'POST') {
-        const data = await request.json();
+        const data = await parseJsonRequest(request);
         const { text } = data;
 
         if (!text) {
-          return new Response(JSON.stringify({ error: "텍스트가 필요합니다." }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
-          });
+          return jsonResponse({ error: "텍스트가 필요합니다." }, { status: 400 });
         }
 
-        const speech = await callOpenAI('audio/speech', {
-          model: 'tts-1',
-          voice: 'nova',
-          input: text,
-          response_format: 'mp3',
-        }, env.OPENAI_API_KEY);
+        try {
+          const speech = await callOpenAI('audio/speech', {
+            model: 'tts-1',
+            voice: 'nova',
+            input: text,
+            response_format: 'mp3',
+          }, env.OPENAI_API_KEY);
 
-        // 오디오를 직접 스트리밍
-        return new Response(speech.body, {
-          headers: {
-            'Content-Type': 'audio/mpeg',
-            'Cache-Control': 'public, max-age=300',
-            ...corsHeaders,
-          },
-        });
+          return new Response(speech.body, {
+            headers: {
+              'Content-Type': 'audio/mpeg',
+              'Cache-Control': 'public, max-age=300',
+              ...corsHeaders,
+            },
+          });
+        } catch (error) {
+          return jsonResponse({
+            error: error instanceof Error ? error.message : 'TTS 생성 중 오류가 발생했습니다.',
+            fallback: true,
+          }, { status: 502 });
+        }
       }
 
       // STT API
@@ -304,10 +335,7 @@ export default {
         const audioFile = formData.get('audio');
 
         if (!audioFile) {
-          return new Response(JSON.stringify({ error: "오디오 파일이 필요합니다." }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
-          });
+          return jsonResponse({ error: "오디오 파일이 필요합니다." }, { status: 400 });
         }
 
         const transcriptionFormData = new FormData();
@@ -323,37 +351,31 @@ export default {
           body: transcriptionFormData,
         });
 
+        if (!response.ok) {
+          return jsonResponse({ error: '음성 인식에 실패했습니다.' }, { status: 502 });
+        }
+
         const result = await response.json();
 
-        return new Response(JSON.stringify({ text: result.text || '' }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
-        });
+        return jsonResponse({ text: result.text || '' });
       }
 
       // 헬스 체크
       if (path === '/api/health') {
-        return new Response(JSON.stringify({ 
+        return jsonResponse({
           status: 'healthy',
           timestamp: new Date().toISOString()
-        }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
 
-      return new Response(JSON.stringify({ error: "엔드포인트를 찾을 수 없습니다." }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
+      return jsonResponse({ error: "엔드포인트를 찾을 수 없습니다." }, { status: 404 });
 
     } catch (error) {
       console.error('Worker error:', error);
-      return new Response(JSON.stringify({ 
-        error: "서버 오류가 발생했습니다.",
-        details: error.message 
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
+      return jsonResponse({
+        error: '서버 오류가 발생했습니다.',
+        details: error instanceof Error ? error.message : String(error),
+      }, { status: 500 });
     }
   },
 };
